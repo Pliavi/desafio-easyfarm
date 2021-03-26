@@ -1,14 +1,16 @@
-import Vue from 'vue'
-import App from './App.vue'
-import store from './store'
-import VCalendar from 'v-calendar';
+import Vue from "vue";
+import App from "./App.vue";
+import store from "./store";
 
-Vue.use(VCalendar);
+import "vue2-datepicker/index.css";
+import "vue2-datepicker/locale/pt-br";
 
-Vue.config.productionTip = false
+import "@/assets/index.css";
+
+Vue.config.productionTip = false;
 
 new Vue({
   store,
   // @ts-ignore
   render: h => h(App)
-}).$mount('#app')
+}).$mount("#app");
