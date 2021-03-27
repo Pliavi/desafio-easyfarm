@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-6 p-4 bg-gray-300">
+  <div class="flex items-center gap-6 p-4 bg-gray-300 rounded-lg">
     <div
       class="flex items-center justify-center w-12 h-12 text-2xl font-bold text-white uppercase rounded-lg text-shadow"
       :style="{ backgroundColor: project.color }"
@@ -7,8 +7,8 @@
       {{ newTodo.task[0] }}
     </div>
 
-    <!-- form -->
-    <form class="flex flex-1 h-12 gap-x-6" @submit.prevent="addTodo(newTodo)">
+    <form class="flex flex-1 h-12 gap-x-6" @submit.prevent="addTodo">
+      <!-- task name -->
       <div class="flex-1">
         <input
           class="w-full h-12 px-4 rounded-lg bg-gray-white"
@@ -18,6 +18,7 @@
         />
       </div>
 
+      <!-- task deadline -->
       <div class="flex-1">
         <date-picker
           id="deadline"
@@ -34,9 +35,10 @@
       </div>
 
       <button
-        class="self-center w-8 h-8 ml-auto text-2xl text-white bg-green-500 rounded-lg shadow hover:shadow-md"
+        class="flex items-center self-center justify-center w-8 h-8 ml-auto text-2xl text-white bg-green-500 rounded-lg shadow hover:shadow-md"
+        type="submit"
       >
-        +
+        <PlusIcon size="1x" />
       </button>
     </form>
   </div>
@@ -44,7 +46,7 @@
 
 <script>
 import DatePicker from "vue2-datepicker";
-import { mapMutations } from "vuex";
+import { PlusIcon } from "@vue-hero-icons/solid";
 
 export default {
   props: ["project"],
@@ -57,10 +59,25 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["addTodo"]),
+    addTodo() {
+      this.newTodo.task = this.newTodo.task.trim();
+
+      if (this.newTodo.task !== "") {
+        this.$store.commit("addTodo", this.newTodo);
+        this.newTodo = {
+          task: "",
+          deadline: null,
+        };
+
+        return;
+      }
+
+      this.$toast.error("O nome não pode ser vazio", { position: "top" });
+    },
   },
   components: {
     DatePicker,
+    PlusIcon,
   },
 };
 </script>
@@ -72,6 +89,8 @@ export default {
 </style>
 
 <style lang="postcss">
+/* Customizing deadline date picker */
+/* XXX: não pode ser escopado ou deverá usar deep-selector */
 .deadline-picker.mx-datepicker {
   @apply w-full h-12 overflow-hidden rounded-lg;
 }
