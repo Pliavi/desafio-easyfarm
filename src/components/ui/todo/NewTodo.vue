@@ -1,19 +1,22 @@
 <template>
   <div class="flex items-center gap-6 p-4 bg-gray-300 rounded-lg">
     <div
-      class="flex items-center justify-center w-12 h-12 text-2xl font-bold text-white uppercase rounded-lg text-shadow"
+      class="items-center justify-center hidden w-12 h-12 text-2xl font-bold text-white uppercase rounded-lg text-shadow md:flex"
       :style="{ backgroundColor: project.color }"
     >
       {{ newTodo.task[0] }}
     </div>
 
-    <form class="flex flex-1 h-12 gap-x-6" @submit.prevent="addTodo">
+    <form
+      class="flex flex-col flex-1 gap-x-6 gap-y-2 md:h-12 md:flex-row"
+      @submit.prevent="addTodo"
+    >
       <!-- task name -->
       <div class="flex-1">
         <input
           class="w-full h-12 px-4 rounded-lg bg-gray-white"
           type="text"
-          placeholder="Nome da tarefa"
+          placeholder="Nome da nova tarefa"
           v-model="newTodo.task"
         />
       </div>

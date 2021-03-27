@@ -8,7 +8,7 @@
         <input
           class="w-full h-12 px-4 rounded-lg shadow bg-gray-white"
           type="text"
-          placeholder="Nome do projeto"
+          placeholder="Nome do novo projeto"
           v-model="newProject"
         />
       </div>
