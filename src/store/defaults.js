@@ -1,6 +1,7 @@
 export const defaultState = () => ({
   lastUID: 3,
   selectedProject: 0,
+  order: "",
   newTodo: {
     task: "",
     deadline: false,
@@ -8,7 +9,7 @@ export const defaultState = () => ({
   },
   projects: [
     {
-      id: "p1",
+      id: 1,
       name: "Vamos começar!",
       color: "hsl(30, 45%, 85%)",
       lastUID: 5,
@@ -28,19 +29,19 @@ export const defaultState = () => ({
         {
           id: 3,
           task: "Crie sua primeira atividade!",
-          deadline: false,
-          completed: false
+          deadline: 1616778716750,
+          completed: false,
         },
         {
           id: 4,
           task: "Finalize esta atividade! Você está atrasado!",
-          deadline: 1616740263418,
+          deadline: 1616777714724,
           completed: false
         }
       ]
     },
     {
-      id: "p2",
+      id: 2,
       name: "Me apague!",
       color: "hsl(280, 75%, 95%)",
       lastUID: 4,
