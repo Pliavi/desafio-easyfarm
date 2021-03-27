@@ -1,48 +1,70 @@
 <template>
-  <div id="app">
-    <ProjectFilters :ordering="options.ordering" :filter="options.filter" />
-    <ProjectBoard :project="currentProject" />
+  <div id="app" class="min-h-screen py-8 text-gray-800 bg-gray-200">
+    <div class="flex items-center justify-center gap-2 mb-8">
+      <img class="h-12" src="@/assets/logo_icon.png" alt="" />
+      <div class="text-2xl font-bold">EasyTasks</div>
+    </div>
+
+    <div class="container mx-auto space-y-8">
+      <ProjectFilters
+        :order="options.order"
+        :filter="options.filter"
+        :projects="projects"
+        @filterChange="(filter) => (options.filter = filter)"
+        @orderChange="(order) => (options.order = order)"
+        @projectChange="(project) => (options.selectedProject = project)"
+      />
+
+      <NewProject />
+
+      <ProjectBoard
+        :project="project"
+        :order="options.order"
+        :filter="options.filter"
+        v-for="project in filteredProject"
+        :key="project.id"
+        @delete="deleteProject"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from "vuex";
-  import ProjectFilters from "@/components/ui/project/ProjectFilters";
-  import ProjectBoard from "@/components/ui/project/ProjectBoard";
+import { mapMutations, mapState } from "vuex";
+import ProjectFilters from "@/components/ui/project/ProjectFilters";
+import ProjectBoard from "@/components/ui/project/ProjectBoard";
+import NewProject from "./components/ui/project/NewProject.vue";
 
-  export default {
-    name: "App",
-    components: {
-      ProjectFilters,
-      ProjectBoard
+export default {
+  name: "App",
+  components: {
+    ProjectFilters,
+    ProjectBoard,
+    NewProject,
+  },
+  data() {
+    return {
+      options: {
+        order: "none",
+        filter: "all",
+        selectedProject: undefined,
+      },
+    };
+  },
+  computed: {
+    ...mapState(["projects"]),
+    filteredProject() {
+      return this.$store.getters.filteredProjects(this.options.selectedProject);
     },
-    data() {
-      return {
-        options: {
-          ordering: "asc",
-          filter: "all"
-        }
-      };
+  },
+  methods: {
+    ...mapMutations(["createProject"]),
+    deleteProject(project) {
+      if (this.options.selectedProject === project) {
+        this.options.selectedProject = undefined;
+      }
+      this.$store.commit("deleteProject", project);
     },
-    computed: {
-      ...mapGetters(["currentProject", "filteredTodos"])
-    },
-    methods: {
-      ...mapMutations({ createProject: "createProject" })
-    }
-  };
+  },
+};
 </script>
-
-<style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
-
-  .date {
-  }
-</style>
