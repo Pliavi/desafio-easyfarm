@@ -8,7 +8,7 @@
     ]"
   >
     <div
-      class="flex items-center justify-center w-12 h-12 text-2xl font-bold text-white uppercase rounded-lg text-shadow"
+      class="flex items-center justify-center hidden w-12 h-12 text-2xl font-bold text-white uppercase rounded-lg text-shadow md:block"
       :style="{ backgroundColor: project.color }"
     >
       {{ todo.task[0] }}
