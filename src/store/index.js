@@ -5,10 +5,18 @@ import { createRandomColor } from "../lib/colors";
 
 Vue.use(Vuex);
 
+const loadFromStorage = () => {
+  return JSON.parse(localStorage.getItem("projects"));
+};
+
+const saveToStorage = projects => {
+  return localStorage.setItem("projects", JSON.stringify(projects));
+};
+
 const getCurrentProject = state => state.projects[state.selectedProject];
 
 const store = new Vuex.Store({
-  state: defaultState,
+  state: loadFromStorage() || defaultState,
   mutations: {
     addTodo(state, { task, deadline }) {
       const currentProject = getCurrentProject(state);
@@ -37,9 +45,9 @@ const store = new Vuex.Store({
       todos[todos.indexOf(todo)].completed = !todo.completed;
     },
 
-    createProject(state, name) {
+    addProject(state, name) {
       state.projects.push({
-        id: `p${state.lastUID++}`,
+        id: state.lastUID++,
         name,
         color: createRandomColor(),
         lastUID: 0,
@@ -54,48 +62,73 @@ const store = new Vuex.Store({
     }
   },
   getters: {
-    currentProject: state => {
-      console.log(state);
-      console.log(getCurrentProject(state));
-      return getCurrentProject(state);
+    filteredProjects: ({ projects }) => selectedProject => {
+      if (selectedProject) {
+        return [projects[projects.indexOf(selectedProject)]];
+      }
+      return projects.sort((a, b) => b.id - a.id);
     },
-    todos: state => (filter, dateSort) => {
-      const todos = getCurrentProject(state).todos;
-
-      todos.sort((todoA, todoB) => {
-        if (todoA.deadline > todoB.deadline) {
-          return dateSort === "asc" ? -1 : 1;
-        }
-
-        if (todoA.deadline < todoB.deadline) {
-          return dateSort === "asc" ? 1 : -1;
-        }
-
-        return 0;
-      });
+    todos: () => (project, filter = "all", dateSort = "asc") => {
+      let todos = project.todos;
 
       if (filter === "completed") {
-        return todos.filter(todo => todo.completed);
+        todos = todos.filter(todo => todo.completed);
       }
 
       if (filter === "pending") {
-        return todos.filter(todo => !todo.completed);
+        todos = todos.filter(todo => !todo.completed);
       }
 
       if (filter === "late") {
         const now = Date.now();
 
-        return todos.filter(todo => {
+        todos = todos.filter(todo => {
           if (!todo.deadline) return false;
-          const deadline = Date.parse(todo.deadline);
+          if (todo.completed) return false;
+
+          const deadline = new Date(todo.deadline);
 
           return deadline < now;
+        });
+      }
+
+      if (dateSort !== "none") {
+        todos.sort((todoA, todoB) => {
+          if (!todoA.deadline) return 1;
+          if (!todoB.deadline) return -1;
+
+          if (dateSort === "asc") {
+            if (todoA.deadline > todoB.deadline) return 1;
+            if (todoA.deadline < todoB.deadline) return -1;
+          }
+
+          if (dateSort === "desc") {
+            if (todoA.deadline > todoB.deadline) return -1;
+            if (todoA.deadline < todoB.deadline) return 1;
+          }
+
+          return 0;
+        });
+      } else {
+        todos.sort((todoA, todoB) => {
+          if (todoA.id > todoB.id) {
+            return 1;
+          }
+          if (todoA.id < todoB.id) {
+            return -1;
+          }
+
+          return 0;
         });
       }
 
       return todos;
     }
   }
+});
+
+store.watch(() => {
+  saveToStorage(store.state);
 });
 
 export default store;
